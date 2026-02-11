@@ -41,6 +41,7 @@ async function init() {
     }
 
     hideLoading();
+    history.replaceState({ band: currentBand, path: [] }, '');
     renderState();
   } catch (err) {
     console.error(err);
@@ -62,21 +63,32 @@ function hideLoading() {
     btnGd.classList.toggle('active', currentBand === 'gd');
     btnDandc.classList.toggle('active', currentBand === 'dandc');
     selectedPath = [];
+    history.pushState({ band: currentBand, path: [] }, '');
     renderState();
   });
 });
 
 btnBack.addEventListener('click', () => {
-  if (selectedPath.length > 0) {
-    selectedPath.pop();
-    renderState();
-  }
+  if (selectedPath.length > 0) history.back();
 });
 
 btnRestart.addEventListener('click', restart);
 
+window.addEventListener('popstate', e => {
+  const state = e.state;
+  if (!state) return;
+  if (state.band && state.band !== currentBand) {
+    currentBand = state.band;
+    btnGd.classList.toggle('active', currentBand === 'gd');
+    btnDandc.classList.toggle('active', currentBand === 'dandc');
+  }
+  selectedPath = state.path ?? [];
+  renderState();
+});
+
 function restart() {
   selectedPath = [];
+  history.pushState({ band: currentBand, path: [] }, '');
   renderState();
 }
 
@@ -195,6 +207,7 @@ function renderGrid(options) {
 
     card.addEventListener('click', () => {
       selectedPath.push(song);
+      history.pushState({ band: currentBand, path: selectedPath.slice() }, '');
       renderState();
     });
 
