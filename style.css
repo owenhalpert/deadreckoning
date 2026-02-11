@@ -278,7 +278,6 @@ body {
     border-color var(--t) var(--ease),
     transform var(--t) var(--ease),
     box-shadow var(--t) var(--ease);
-  animation: cardIn 0.3s var(--ease) backwards;
 }
 
 .song-card:hover {
@@ -327,22 +326,7 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
-/* Staggered entrance animation */
-@keyframes cardIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to   { opacity: 1; transform: translateY(0);    }
-}
 
-.song-card:nth-child(1)  { animation-delay:   0ms; }
-.song-card:nth-child(2)  { animation-delay:  25ms; }
-.song-card:nth-child(3)  { animation-delay:  50ms; }
-.song-card:nth-child(4)  { animation-delay:  75ms; }
-.song-card:nth-child(5)  { animation-delay: 100ms; }
-.song-card:nth-child(6)  { animation-delay: 125ms; }
-.song-card:nth-child(7)  { animation-delay: 150ms; }
-.song-card:nth-child(8)  { animation-delay: 175ms; }
-.song-card:nth-child(9)  { animation-delay: 200ms; }
-.song-card:nth-child(10) { animation-delay: 225ms; }
 
 /* ── Show reveal ─────────────────────────────────────────────── */
 .show-reveal {
@@ -484,6 +468,7 @@ body {
   margin: 3rem 0;
 }
 
+
 /* ── Loading screen ──────────────────────────────────────────── */
 .loading-screen {
   position: fixed;
@@ -491,27 +476,14 @@ body {
   z-index: 200;
   background: var(--bg);
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 1.5rem;
   transition: opacity 0.55s var(--ease);
 }
 
 .loading-screen.fade-out {
   opacity: 0;
   pointer-events: none;
-}
-
-.loading-skull {
-  font-size: 3.8rem;
-  animation: skullPulse 2.2s ease-in-out infinite;
-  filter: grayscale(1) opacity(0.65);
-}
-
-@keyframes skullPulse {
-  0%, 100% { transform: scale(1);    opacity: 0.45; }
-  50%       { transform: scale(1.1); opacity: 0.9;  }
 }
 
 .loading-text {

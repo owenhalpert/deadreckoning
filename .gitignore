@@ -1,5 +1,9 @@
 node_modules/
 .DS_Store
+**/.DS_Store
+.env
+.env.local
+.env*.local
 
 # Fetch scripts contain an API key — don't commit them publicly
 scripts/fetch-setlists.js

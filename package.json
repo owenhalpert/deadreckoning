@@ -1,9 +1,18 @@
 {
-  "name": "markovs-dead",
+  "name": "dead-reckoning",
   "version": "1.0.0",
+  "description": "Find any Grateful Dead or Dead & Company setlist by navigating song sequences",
   "type": "module",
+  "author": "Owen Halpert",
+  "license": "MIT",
+  "homepage": "https://owenhalpert.com/deadreckoning",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/owenhalpert/deadreckoning"
+  },
   "scripts": {
     "fetch": "node scripts/fetch-setlists.js",
-    "fetch:dandc": "node scripts/fetch-dandc.js"
+    "fetch:dandc": "node scripts/fetch-dandc.js",
+    "serve": "npx serve ."
   }
 }

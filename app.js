@@ -8,9 +8,9 @@ let currentBand  = 'gd';
 let selectedPath = [];   // songs chosen so far (ordered)
 
 // ── DOM refs ─────────────────────────────────────────────────
+const loadingScreen  = document.getElementById('loading-screen');
 const btnGd          = document.getElementById('btn-gd');
 const btnDandc       = document.getElementById('btn-dandc');
-const loadingScreen  = document.getElementById('loading-screen');
 const pathSection    = document.getElementById('path-section');
 const pathInner      = document.getElementById('path-inner');
 const btnBack        = document.getElementById('btn-back');
