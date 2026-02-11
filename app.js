@@ -6,13 +6,20 @@
 const allShows   = { gd: [], dandc: [] };
 let currentBand  = 'gd';
 let selectedPath = [];   // songs chosen so far (ordered)
+let freePlay     = false; // false = prefix (from opener), true = substring (anywhere)
 
 // ── DOM refs ─────────────────────────────────────────────────
 const loadingScreen  = document.getElementById('loading-screen');
 const btnGd          = document.getElementById('btn-gd');
 const btnDandc       = document.getElementById('btn-dandc');
+const btnOpener      = document.getElementById('btn-opener');
+const btnFreePlay    = document.getElementById('btn-freeplay');
 const pathSection    = document.getElementById('path-section');
 const pathInner      = document.getElementById('path-inner');
+const btnInfo        = document.getElementById('btn-info');
+const modalInfo      = document.getElementById('modal-info');
+const modalBackdrop  = document.getElementById('modal-backdrop');
+const modalClose     = document.getElementById('modal-close');
 const btnBack        = document.getElementById('btn-back');
 const btnRestart     = document.getElementById('btn-restart');
 const counterNumber  = document.getElementById('counter-number');
@@ -41,7 +48,7 @@ async function init() {
     }
 
     hideLoading();
-    history.replaceState({ band: currentBand, path: [] }, '');
+    history.replaceState({ band: currentBand, path: [], mode: 'opener' }, '');
     renderState();
   } catch (err) {
     console.error(err);
@@ -63,10 +70,43 @@ function hideLoading() {
     btnGd.classList.toggle('active', currentBand === 'gd');
     btnDandc.classList.toggle('active', currentBand === 'dandc');
     selectedPath = [];
-    history.pushState({ band: currentBand, path: [] }, '');
+    history.pushState({ band: currentBand, path: [], mode: freePlay ? 'freeplay' : 'opener' }, '');
     renderState();
   });
 });
+
+[btnOpener, btnFreePlay].forEach(btn => {
+  btn.addEventListener('click', () => {
+    if (btn.classList.contains('active')) return;
+    freePlay = btn.dataset.mode === 'freeplay';
+    btnOpener.classList.toggle('active', !freePlay);
+    btnFreePlay.classList.toggle('active', freePlay);
+    selectedPath = [];
+    history.pushState({ band: currentBand, path: [], mode: freePlay ? 'freeplay' : 'opener' }, '');
+    renderState();
+  });
+});
+
+btnInfo.addEventListener('click', openModal);
+modalClose.addEventListener('click', closeModal);
+modalBackdrop.addEventListener('click', closeModal);
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+function openModal() {
+  modalInfo.hidden     = false;
+  modalBackdrop.hidden = false;
+  modalInfo.removeAttribute('aria-hidden');
+  modalBackdrop.removeAttribute('aria-hidden');
+  modalClose.focus();
+}
+
+function closeModal() {
+  modalInfo.hidden     = true;
+  modalBackdrop.hidden = true;
+  modalInfo.setAttribute('aria-hidden', 'true');
+  modalBackdrop.setAttribute('aria-hidden', 'true');
+  btnInfo.focus();
+}
 
 btnBack.addEventListener('click', () => {
   if (selectedPath.length > 0) history.back();
@@ -82,13 +122,18 @@ window.addEventListener('popstate', e => {
     btnGd.classList.toggle('active', currentBand === 'gd');
     btnDandc.classList.toggle('active', currentBand === 'dandc');
   }
+  if (state.mode) {
+    freePlay = state.mode === 'freeplay';
+    btnOpener.classList.toggle('active', !freePlay);
+    btnFreePlay.classList.toggle('active', freePlay);
+  }
   selectedPath = state.path ?? [];
   renderState();
 });
 
 function restart() {
   selectedPath = [];
-  history.pushState({ band: currentBand, path: [] }, '');
+  history.pushState({ band: currentBand, path: [], mode: freePlay ? 'freeplay' : 'opener' }, '');
   renderState();
 }
 
@@ -120,10 +165,56 @@ function getNextOptions(shows) {
     .map(([song, count]) => ({ song, count }));
 }
 
+// ── Free Play core logic ──────────────────────────────────────
+
+// All start indices where path appears as a contiguous subsequence in songs.
+function findPositions(songs, path) {
+  const positions = [];
+  const n = path.length;
+  outer: for (let i = 0; i <= songs.length - n; i++) {
+    for (let j = 0; j < n; j++) {
+      if (songs[i + j] !== path[j]) continue outer;
+    }
+    positions.push(i);
+  }
+  return positions;
+}
+
+// Shows that contain selectedPath as a contiguous substring anywhere in songs[].
+function getMatchingShowsFreePlay() {
+  const n = selectedPath.length;
+  if (n === 0) return allShows[currentBand];
+  return allShows[currentBand].filter(show =>
+    findPositions(show.songs, selectedPath).length > 0
+  );
+}
+
+// Distribution of next songs across all matching positions in all shows.
+function getNextOptionsFreePlay(shows) {
+  const counts = Object.create(null);
+  const n = selectedPath.length;
+  for (const show of shows) {
+    const positions = n === 0
+      ? show.songs.map((_, i) => i)
+      : findPositions(show.songs, selectedPath);
+    const seen = new Set();
+    for (const pos of positions) {
+      const next = show.songs[pos + n];
+      if (next !== undefined && !seen.has(next)) {
+        seen.add(next);
+        counts[next] = (counts[next] ?? 0) + 1;
+      }
+    }
+  }
+  return Object.entries(counts)
+    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+    .map(([song, count]) => ({ song, count }));
+}
+
 // ── Render orchestrator ───────────────────────────────────────
 function renderState() {
-  const matching = getMatchingShows();
-  const options  = getNextOptions(matching);
+  const matching = freePlay ? getMatchingShowsFreePlay() : getMatchingShows();
+  const options  = freePlay ? getNextOptionsFreePlay(matching) : getNextOptions(matching);
 
   // Has the user navigated to a unique show (or exhausted all songs in the
   // remaining shows, which is functionally the same end-state)?
@@ -135,7 +226,7 @@ function renderState() {
   if (isFound) {
     // Dramatic reveal
     counterNumber.textContent = matching.length.toLocaleString();
-    counterLabel.textContent  = matching.length === 1 ? 'show found' : 'identical setlists found';
+    counterLabel.textContent  = matching.length === 1 ? 'show found' : 'matching setlists found';
     counterNumber.classList.add('found');
 
     optionsGrid.hidden   = true;
@@ -185,9 +276,15 @@ function setCounter(num, label) {
 }
 
 function updatePrompt() {
-  promptText.textContent = selectedPath.length === 0
-    ? 'Which song opened the show?'
-    : 'What came next?';
+  if (freePlay) {
+    promptText.textContent = selectedPath.length === 0
+      ? 'Pick any song from anywhere in a show'
+      : 'What came next?';
+  } else {
+    promptText.textContent = selectedPath.length === 0
+      ? 'Which song opened the show?'
+      : 'What came next?';
+  }
 }
 
 function renderGrid(options) {
@@ -207,7 +304,7 @@ function renderGrid(options) {
 
     card.addEventListener('click', () => {
       selectedPath.push(song);
-      history.pushState({ band: currentBand, path: selectedPath.slice() }, '');
+      history.pushState({ band: currentBand, path: selectedPath.slice(), mode: freePlay ? 'freeplay' : 'opener' }, '');
       renderState();
     });
 
@@ -267,6 +364,11 @@ function buildRevealCard(show) {
   // Track global song index so we can highlight path songs by position
   let globalIdx = 0;
 
+  // In free play mode, find the first match position (not necessarily 0)
+  const pathStart = freePlay && selectedPath.length > 0
+    ? (findPositions(show.songs, selectedPath)[0] ?? 0)
+    : 0;
+
   setsData.forEach(set => {
     const setEl   = document.createElement('div');
     setEl.className = 'reveal-set';
@@ -281,7 +383,7 @@ function buildRevealCard(show) {
 
     set.songs.forEach((song, localIdx) => {
       const pos    = globalIdx++;
-      const inPath = pos < selectedPath.length;
+      const inPath = pos >= pathStart && pos < pathStart + selectedPath.length;
 
       const li = document.createElement('li');
       li.className = 'reveal-song-item' + (inPath ? ' in-path' : '');
