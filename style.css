@@ -1,0 +1,531 @@
+/* ============================================================
+   Dead Reckoning — Grateful Dead Setlist Navigator
+   ============================================================ */
+
+/* ── Custom properties ──────────────────────────────────────── */
+:root {
+  --bg:           #07070f;
+  --card:         rgba(255 255 255 / 0.04);
+  --card-hover:   rgba(255 255 255 / 0.08);
+  --border:       rgba(255 255 255 / 0.07);
+  --border-hover: rgba(255 255 255 / 0.18);
+
+  --red:          #d93025;
+  --red-glow:     rgba(217, 48, 37, 0.3);
+  --orange:       #e8821a;
+  --amber:        #f5c518;
+  --purple:       #7c4dff;
+  --purple-dim:   rgba(124, 77, 255, 0.15);
+
+  --text:         #f0e8da;
+  --text-muted:   #7a6a5a;
+  --text-dim:     #3e3028;
+
+  --radius:       8px;
+  --radius-lg:    14px;
+  --max-w:        1160px;
+  --ease:         cubic-bezier(0.16, 1, 0.3, 1);
+  --t:            0.2s;
+}
+
+/* ── Reset ───────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+[hidden] { display: none !important; }
+
+/* ── Animated background ─────────────────────────────────────── */
+.bg-glow {
+  position: fixed;
+  inset: -120px;
+  z-index: -1;
+  background:
+    radial-gradient(ellipse 55% 65% at 15% 40%, rgba(124, 77, 255, 0.22) 0%, transparent 70%),
+    radial-gradient(ellipse 55% 65% at 85% 55%, rgba(217, 48, 37, 0.16) 0%, transparent 70%),
+    radial-gradient(ellipse 70% 70% at 50% 50%, rgba(10, 5, 30, 0.9) 0%, transparent 80%);
+  animation: bgDrift 45s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+@keyframes bgDrift {
+  0%   { transform: translate(  0%,   0%) scale(1);    }
+  25%  { transform: translate( -4%,   6%) scale(1.04); }
+  50%  { transform: translate(  5%,  -4%) scale(0.97); }
+  75%  { transform: translate( -3%,  -6%) scale(1.03); }
+  100% { transform: translate(  6%,   3%) scale(1.01); }
+}
+
+/* ── Header ──────────────────────────────────────────────────── */
+.site-header {
+  padding: 3.5rem 2rem 2rem;
+  text-align: center;
+}
+
+.site-title {
+  font-family: 'Alfa Slab One', serif;
+  font-size: clamp(2rem, 7.5vw, 4.8rem);
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  line-height: 1.1;
+  margin-bottom: 0.65rem;
+  -webkit-text-fill-color: transparent;
+  -webkit-text-stroke: 2px var(--text);
+}
+
+.band-toggle {
+  display: flex;
+  gap: 0;
+  margin-top: 1.5rem;
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  padding: 3px;
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.band-btn {
+  padding: 0.35rem 1.1rem;
+  border: none;
+  border-radius: 100px;
+  background: transparent;
+  color: var(--text-muted);
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-size: 0.78rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background var(--t), color var(--t);
+  white-space: nowrap;
+}
+
+.band-btn:hover:not(:disabled) {
+  color: var(--text);
+}
+
+.band-btn.active {
+  background: rgba(255 255 255 / 0.08);
+  color: var(--text);
+}
+
+.band-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.site-subtitle {
+  font-size: 0.92rem;
+  color: var(--text-muted);
+  font-weight: 300;
+  letter-spacing: 0.04em;
+}
+
+/* ── Main layout ─────────────────────────────────────────────── */
+.main-content {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 0 1.5rem 5rem;
+}
+
+/* ── Path breadcrumb ─────────────────────────────────────────── */
+.path-section {
+  margin-bottom: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.path-inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+  line-height: 1;
+}
+
+.path-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.28rem 0.7rem;
+  background: rgba(124, 77, 255, 0.1);
+  border: 1px solid rgba(124, 77, 255, 0.28);
+  border-radius: 100px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: rgba(200, 185, 255, 0.88);
+  white-space: nowrap;
+  animation: chipIn var(--t) var(--ease);
+}
+
+.path-chip-num {
+  font-size: 0.65rem;
+  color: rgba(150, 135, 210, 0.65);
+  font-weight: 300;
+}
+
+.path-arrow {
+  color: var(--text-dim);
+  font-size: 0.75rem;
+}
+
+@keyframes chipIn {
+  from { opacity: 0; transform: translateX(-6px); }
+  to   { opacity: 1; transform: translateX(0);    }
+}
+
+.path-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.btn-ghost {
+  padding: 0.3rem 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  background: transparent;
+  color: var(--text-muted);
+  font-family: inherit;
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: border-color var(--t), color var(--t), background var(--t);
+}
+
+.btn-ghost:hover {
+  border-color: var(--border-hover);
+  color: var(--text);
+  background: var(--card-hover);
+}
+
+/* ── Counter ─────────────────────────────────────────────────── */
+.counter-section {
+  display: flex;
+  align-items: baseline;
+  gap: 0.55rem;
+  margin-bottom: 0.6rem;
+}
+
+.counter-number {
+  font-size: clamp(2.4rem, 6vw, 4rem);
+  font-weight: 700;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  background: linear-gradient(135deg, var(--text) 0%, var(--text-muted) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  transition: background 0.35s var(--ease);
+}
+
+.counter-number.found {
+  background: linear-gradient(135deg, var(--amber) 0%, var(--orange) 55%, var(--red) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.counter-label {
+  font-size: 1rem;
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+/* ── Prompt ──────────────────────────────────────────────────── */
+.prompt-text {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  font-weight: 300;
+  letter-spacing: 0.03em;
+  margin-bottom: 1.25rem;
+}
+
+/* ── Options grid ────────────────────────────────────────────── */
+.options-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 0.7rem;
+}
+
+/* ── Song card ───────────────────────────────────────────────── */
+.song-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding: 0.85rem 1rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  color: var(--text);
+  overflow: hidden;
+  transition:
+    background var(--t) var(--ease),
+    border-color var(--t) var(--ease),
+    transform var(--t) var(--ease),
+    box-shadow var(--t) var(--ease);
+  animation: cardIn 0.3s var(--ease) backwards;
+}
+
+.song-card:hover {
+  background: var(--card-hover);
+  border-color: var(--border-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255,255,255,0.05);
+}
+
+.song-card:active { transform: translateY(0); }
+
+/* Frequency bar — width driven by --freq CSS var set from JS */
+.song-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  width: calc(var(--freq, 0) * 100%);
+  background: linear-gradient(90deg, var(--red), var(--orange));
+  border-radius: 0 2px 0 0;
+  opacity: 0.6;
+  transition: opacity var(--t);
+}
+
+.song-card:hover::after { opacity: 1; }
+
+/* Top-ranked card gets a warm glow */
+.song-card.top {
+  border-color: rgba(217, 48, 37, 0.28);
+}
+.song-card.top:hover {
+  border-color: rgba(217, 48, 37, 0.55);
+  box-shadow: 0 0 28px rgba(217, 48, 37, 0.12), 0 8px 28px rgba(0,0,0,0.45);
+}
+
+.song-name {
+  font-size: 0.93rem;
+  font-weight: 500;
+  line-height: 1.35;
+}
+
+.song-count {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Staggered entrance animation */
+@keyframes cardIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+
+.song-card:nth-child(1)  { animation-delay:   0ms; }
+.song-card:nth-child(2)  { animation-delay:  25ms; }
+.song-card:nth-child(3)  { animation-delay:  50ms; }
+.song-card:nth-child(4)  { animation-delay:  75ms; }
+.song-card:nth-child(5)  { animation-delay: 100ms; }
+.song-card:nth-child(6)  { animation-delay: 125ms; }
+.song-card:nth-child(7)  { animation-delay: 150ms; }
+.song-card:nth-child(8)  { animation-delay: 175ms; }
+.song-card:nth-child(9)  { animation-delay: 200ms; }
+.song-card:nth-child(10) { animation-delay: 225ms; }
+
+/* ── Show reveal ─────────────────────────────────────────────── */
+.show-reveal {
+  animation: revealIn 0.5s var(--ease);
+}
+
+@keyframes revealIn {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+
+.reveal-date {
+  font-size: clamp(1.7rem, 4.5vw, 2.8rem);
+  font-weight: 700;
+  line-height: 1.1;
+  background: linear-gradient(135deg, var(--amber), var(--orange));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 0.35rem;
+}
+
+.reveal-venue {
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.reveal-location {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-top: 0.15rem;
+}
+
+.reveal-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 1.75rem 0;
+}
+
+.reveal-sets {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.reveal-set-name {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--text-dim);
+  font-weight: 600;
+  margin-bottom: 0.6rem;
+}
+
+.reveal-song-list {
+  list-style: none;
+}
+
+.reveal-song-item {
+  display: flex;
+  gap: 0.9rem;
+  padding: 0.42rem 0;
+  border-bottom: 1px solid rgba(255,255,255,0.035);
+  align-items: baseline;
+  font-size: 0.93rem;
+}
+
+.reveal-song-item:last-child { border-bottom: none; }
+
+.reveal-song-num {
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  min-width: 1.4rem;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Songs that were part of the chosen path */
+.reveal-song-item.in-path .reveal-song-name {
+  color: rgba(205, 190, 255, 0.92);
+}
+.reveal-song-item.in-path .reveal-song-num {
+  color: rgba(155, 135, 215, 0.75);
+}
+
+.reveal-actions {
+  display: flex;
+  gap: 0.85rem;
+  margin-top: 2.5rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.btn-setlist {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.6rem 1.35rem;
+  background: rgba(217, 48, 37, 0.12);
+  border: 1px solid rgba(217, 48, 37, 0.38);
+  border-radius: var(--radius);
+  color: rgba(255, 165, 145, 0.9);
+  font-family: inherit;
+  font-size: 0.88rem;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background var(--t), border-color var(--t), color var(--t);
+}
+
+.btn-setlist:hover {
+  background: rgba(217, 48, 37, 0.22);
+  border-color: rgba(217, 48, 37, 0.65);
+  color: rgba(255, 185, 165, 1);
+}
+
+.btn-again {
+  padding: 0.6rem 1.35rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-muted);
+  font-family: inherit;
+  font-size: 0.88rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background var(--t), border-color var(--t), color var(--t);
+}
+
+.btn-again:hover {
+  background: var(--card-hover);
+  border-color: var(--border-hover);
+  color: var(--text);
+}
+
+/* Multiple reveals (if identical setlists somehow) */
+.reveal-separator {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border), transparent);
+  margin: 3rem 0;
+}
+
+/* ── Loading screen ──────────────────────────────────────────── */
+.loading-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  transition: opacity 0.55s var(--ease);
+}
+
+.loading-screen.fade-out {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.loading-skull {
+  font-size: 3.8rem;
+  animation: skullPulse 2.2s ease-in-out infinite;
+  filter: grayscale(1) opacity(0.65);
+}
+
+@keyframes skullPulse {
+  0%, 100% { transform: scale(1);    opacity: 0.45; }
+  50%       { transform: scale(1.1); opacity: 0.9;  }
+}
+
+.loading-text {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 300;
+}
+
+/* ── Responsive ──────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .site-header { padding: 2.5rem 1rem 1.5rem; }
+  .main-content { padding: 0 1rem 4rem; }
+  .options-grid { grid-template-columns: repeat(auto-fill, minmax(155px, 1fr)); }
+  .reveal-actions { flex-direction: column; align-items: flex-start; }
+}

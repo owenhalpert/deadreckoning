@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Font Picker — Dead Reckoning</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rye&family=Abril+Fatface&family=Pirata+One&family=Grenze+Gotisch:wght@400;700&family=Uncial+Antiqua&family=Yeseva+One&family=Alfa+Slab+One&family=Germania+One&family=Philosopher:wght@700&family=Eagle+Lake&family=MedievalSharp&family=Libre+Baskerville:wght@700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #07070f;
+      color: #f0e8da;
+      font-family: system-ui, sans-serif;
+      padding: 3rem 2rem 6rem;
+      min-height: 100vh;
+    }
+
+    h2 {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: #4a3a2a;
+      margin-bottom: 2.5rem;
+      font-weight: 400;
+    }
+
+    .grid {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .font-row {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      padding: 2rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      cursor: default;
+      transition: background 0.15s;
+      padding-left: 1rem;
+      padding-right: 1rem;
+      margin: 0 -1rem;
+      border-radius: 4px;
+    }
+
+    .font-row:hover {
+      background: rgba(255,255,255,0.03);
+    }
+
+    .font-preview {
+      flex: 1;
+      font-size: clamp(2rem, 6vw, 3.8rem);
+      line-height: 1;
+      background: linear-gradient(135deg, #f5c518 0%, #e8821a 30%, #d93025 62%, #7c4dff 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .font-meta {
+      width: 200px;
+      flex-shrink: 0;
+      text-align: right;
+    }
+
+    .font-name {
+      font-size: 0.8rem;
+      color: #7a6a5a;
+      font-weight: 400;
+      display: block;
+      margin-bottom: 0.2rem;
+    }
+
+    .font-vibe {
+      font-size: 0.7rem;
+      color: #3e3028;
+    }
+
+    @media (max-width: 600px) {
+      .font-row { flex-direction: column; align-items: flex-start; gap: 0.75rem; }
+      .font-meta { width: auto; text-align: left; }
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Font options for "Dead Reckoning"</h2>
+
+  <div class="grid">
+
+    <div class="font-row">
+      <div class="font-preview" style="font-family: 'Rye', serif;">Dead Reckoning</div>
+      <div class="font-meta">
+        <span class="font-name">Rye</span>
+        <span class="font-vibe">Western / vintage poster</span>
+      </div>
+    </div>
+
+    <div class="font-row">
+      <div class="font-preview" style="font-family: 'Pirata One', cursive;">Dead Reckoning</div>
+      <div class="font-meta">
+        <span class="font-name">Pirata One</span>
+        <span class="font-vibe">Gothic / nautical</span>
+      </div>
+    </div>
+
+    <div class="font-row">
+      <div class="font-preview" style="font-family: 'Grenze Gotisch', serif; font-weight: 700;">Dead Reckoning</div>
+      <div class="font-meta">
+        <span class="font-name">Grenze Gotisch</span>
+        <span class="font-vibe">Blackletter / heavy</span>
+      </div>
+    </div>
+
+    <div class="font-row">
+      <div class="font-preview" style="font-family: 'Uncial Antiqua', cursive;">Dead Reckoning</div>
+      <div class="font-meta">
+        <span class="font-name">Uncial Antiqua</span>
+        <span class="font-vibe">Celtic / medieval</span>
+      </div>
+    </div>
+
+    <div class="font-row">
+      <div class="font-preview" style="font-family: 'Germania One', serif;">Dead Reckoning</div>
+      <div class="font-meta">
+        <span class="font-name">Germania One</span>
+        <span class="font-vibe">Gothic / architectural</span>
+      </div>
+    </div>
+
+    <div class="font-row">
+      <div class="font-preview" style="font-family: 'Eagle Lake', serif;">Dead Reckoning</div>
+      <div class="font-meta">
+        <span class="font-name">Eagle Lake</span>
+        <span class="font-vibe">Decorative serif</span>
+      </div>
+    </div>
+
+    <div class="font-row">
+      <div class="font-preview" style="font-family: 'Yeseva One', cursive;">Dead Reckoning</div>
+      <div class="font-meta">
+        <span class="font-name">Yeseva One</span>
+        <span class="font-vibe">Display / editorial</span>
+      </div>
+    </div>
+
+    <div class="font-row">
+      <div class="font-preview" style="font-family: 'Abril Fatface', cursive;">Dead Reckoning</div>
+      <div class="font-meta">
+        <span class="font-name">Abril Fatface</span>
+        <span class="font-vibe">Bold / high contrast</span>
+      </div>
+    </div>
+
+    <div class="font-row">
+      <div class="font-preview" style="font-family: 'Alfa Slab One', cursive;">Dead Reckoning</div>
+      <div class="font-meta">
+        <span class="font-name">Alfa Slab One</span>
+        <span class="font-vibe">Heavy slab serif</span>
+      </div>
+    </div>
+
+    <div class="font-row">
+      <div class="font-preview" style="font-family: 'Philosopher', serif; font-weight: 700;">Dead Reckoning</div>
+      <div class="font-meta">
+        <span class="font-name">Philosopher</span>
+        <span class="font-vibe">Elegant / refined</span>
+      </div>
+    </div>
+
+    <div class="font-row">
+      <div class="font-preview" style="font-family: 'Germania One', serif; letter-spacing: 0.08em;">Dead Reckoning</div>
+      <div class="font-meta">
+        <span class="font-name">MedievalSharp</span>
+        <span class="font-vibe">Sharp / angular medieval</span>
+      </div>
+    </div>
+
+    <div class="font-row">
+      <div class="font-preview" style="font-family: 'Libre Baskerville', serif; font-weight: 700;">Dead Reckoning</div>
+      <div class="font-meta">
+        <span class="font-name">Libre Baskerville Bold</span>
+        <span class="font-vibe">Classic / trustworthy</span>
+      </div>
+    </div>
+
+  </div>
+
+</body>
+</html>

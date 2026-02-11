@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dead Reckoning</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Animated background blob -->
+  <div class="bg-glow" aria-hidden="true"></div>
+
+  <!-- Header -->
+  <header class="site-header">
+    <h1 class="site-title">Dead Reckoning</h1>
+    <p class="site-subtitle">Find any Grateful Dead setlist by sequence of songs, starting with the opener</p>
+
+    <div class="band-toggle">
+      <button class="band-btn active" id="btn-gd" data-band="gd">Grateful Dead</button>
+      <button class="band-btn" id="btn-dandc" data-band="dandc">Dead &amp; Company</button>
+    </div>
+  </header>
+
+  <main class="main-content">
+
+    <!-- Breadcrumb path -->
+    <div class="path-section" id="path-section" hidden>
+      <div class="path-inner" id="path-inner"></div>
+      <div class="path-actions">
+        <button class="btn-ghost" id="btn-back">← Back</button>
+        <button class="btn-ghost" id="btn-restart">Start Over</button>
+      </div>
+    </div>
+
+    <!-- Show counter -->
+    <div class="counter-section" id="counter-section">
+      <span class="counter-number" id="counter-number">—</span>
+      <span class="counter-label" id="counter-label">loading…</span>
+    </div>
+
+    <!-- Prompt -->
+    <p class="prompt-text" id="prompt-text">Which song opened the show?</p>
+
+    <!-- Song option cards -->
+    <div class="options-grid" id="options-grid" role="list" aria-live="polite"></div>
+
+    <!-- Show reveal (replaces grid when 1 show remains) -->
+    <div class="show-reveal" id="show-reveal" hidden></div>
+
+  </main>
+
+  <!-- Loading screen -->
+  <div class="loading-screen" id="loading-screen">
+    <div class="loading-skull" aria-hidden="true">☠</div>
+    <p class="loading-text">Loading setlists…</p>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

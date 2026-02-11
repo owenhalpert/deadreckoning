@@ -1,0 +1,6 @@
+node_modules/
+.DS_Store
+
+# Fetch scripts contain an API key — don't commit them publicly
+scripts/fetch-setlists.js
+scripts/fetch-dandc.js

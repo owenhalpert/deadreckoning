@@ -1,0 +1,9 @@
+{
+  "name": "markovs-dead",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "fetch": "node scripts/fetch-setlists.js",
+    "fetch:dandc": "node scripts/fetch-dandc.js"
+  }
+}
