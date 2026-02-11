@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dead Reckoning</title>
-  <meta name="description" content="Find any Grateful Dead or Dead & Company setlist by navigating song sequences, starting with the opener.">
+  <meta name="description" content="Find any Grateful Dead or Dead & Company setlist by navigating song sequences.">
   <meta name="theme-color" content="#07070f">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -18,12 +18,18 @@
 
   <!-- Header -->
   <header class="site-header">
+    <button class="btn-info" id="btn-info" aria-label="About this site">?</button>
     <h1 class="site-title">Dead Reckoning</h1>
-    <p class="site-subtitle">Find any Grateful Dead setlist by sequence of songs, starting with the opener</p>
+    <p class="site-subtitle">Find any Grateful Dead setlist by navigating song sequences</p>
 
     <div class="band-toggle">
       <button class="band-btn active" id="btn-gd" data-band="gd">Grateful Dead</button>
       <button class="band-btn" id="btn-dandc" data-band="dandc">Dead &amp; Company</button>
+    </div>
+
+    <div class="mode-toggle">
+      <button class="mode-btn active" id="btn-opener" data-mode="opener">From Opener</button>
+      <button class="mode-btn" id="btn-freeplay" data-mode="freeplay">Free Play</button>
     </div>
   </header>
 
@@ -54,6 +60,16 @@
     <div class="show-reveal" id="show-reveal" hidden></div>
 
   </main>
+
+  <!-- Info modal -->
+  <div class="modal-backdrop" id="modal-backdrop" hidden aria-hidden="true"></div>
+  <div class="modal" id="modal-info" hidden role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <button class="modal-close" id="modal-close" aria-label="Close">✕</button>
+    <h2 class="modal-title" id="modal-title">Dead Reckoning</h2>
+    <p class="modal-def"><em>dead reckoning</em> (n.) the practice of calculating your current position from a known starting point, using only the direction and distance you've traveled.</p>
+    <p class="modal-body">Built from a dataset of every Grateful Dead and Dead &amp; Company setlist on <a href="https://www.setlist.fm" target="_blank" rel="noopener noreferrer">Setlist.fm</a>, this site lets you navigate the full catalogue one song at a time. Each pick narrows the field until only one show fits.</p>
+    <p class="modal-body"><strong>Free Play</strong> mode lets you start from any song in the set, not just the opener, so you can search for sequences that happened mid-show.</p>
+  </div>
 
   <!-- Loading screen -->
   <div class="loading-screen" id="loading-screen">
